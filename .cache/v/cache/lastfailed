@@ -1,0 +1,5 @@
+{
+  "lib/python2.7/py4j/tests/byte_string_test.py::ByteStringTest::testByteString": true, 
+  "lib/python2.7/py4j/tests/java_array_test.py::Test::testArray": true, 
+  "lib/python2.7/py4j/tests/java_array_test.py::Test::testCreateArray": true
+}
