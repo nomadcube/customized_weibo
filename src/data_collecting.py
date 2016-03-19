@@ -28,8 +28,14 @@ if __name__ == '__main__':
 
     with client.write('my_favorites.json', encoding='utf-8') as writer:
         for one_post in raw_favorites[u'favorites']:
-            writer.write(one_post['status']['text'] + "\n")
+            if one_post['status'].get('retweeted_status') is not None:
+                writer.write(one_post['status']['retweeted_status']['text'] + "\n")
+            else:
+                writer.write(one_post['status']['text'] + "\n")
 
     with client.write('latest_posts.json', encoding='utf-8') as writer:
         for one_post in raw_latest_posts[u'statuses']:
-            writer.write(one_post['text'] + "\n")
+            if one_post.get('retweeted_status') is not None:
+                writer.write(one_post['retweeted_status']['text'] + "\n")
+            else:
+                writer.write(one_post['text'] + "\n")
