@@ -5,6 +5,7 @@ nearest_post = None
 largest_similarity = 0.0
 
 for line in sys.stdin:
+    # print line
     similarity, post = line.strip().split(",", 1)
     similarity = float(similarity)
     if similarity > largest_similarity:

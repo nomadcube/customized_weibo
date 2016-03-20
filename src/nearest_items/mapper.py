@@ -2,27 +2,19 @@
 # coding=utf-8
 
 import sys
+import jieba
 
 from hdfs import InsecureClient
-
-
-def similarity(a, b):
-    one = set(a)
-    other = set(b)
-    return float(len(one.intersection(other))) / float(len(one.union(other)))
-
+from base import similarity
 
 # 将"我的收藏"里的微博放入一个list中
 hdfs_client = InsecureClient('http://127.0.0.1:50070')
 my_favorites = list()
 with hdfs_client.read('my_favorites.json') as reader:
     for line in reader:
-        my_favorites.append([v for v in line.strip().decode("utf-8")])
+        my_favorites.extend([w for w in jieba.cut(line, cut_all=True)])
 
 for line in sys.stdin:
-    cluster_similarity = 0.0
     line = line.strip("\n")
-    one_post = [w for w in line.decode("utf-8")]
-    for each_favorites in my_favorites:
-        cluster_similarity += similarity(one_post, each_favorites)
-    print repr(cluster_similarity / len(my_favorites)) + "," + line
+    one_post = [w for w in jieba.cut(line, cut_all=True)]
+    print repr(similarity(one_post, my_favorites) / len(my_favorites)) + "," + line
