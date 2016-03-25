@@ -6,7 +6,8 @@ from hmm_likelihood import forward_probability_initiate
 
 def single_status_probability(forward_prob, backward_prob):
     """
-    由特定时刻t下的前向概率向量和后向概率向量计算时刻t下各个状态的概率
+    已知模型参数、观测序列，求时刻t下各状态的概率
+    由特定时刻t下的前向概率向量和后向概率向量计算
 
     :param forward_prob: 时刻t的前向概率向量
     :param backward_prob: 时刻t的后向概率向量
