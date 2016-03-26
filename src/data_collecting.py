@@ -48,7 +48,7 @@ def craw_raw_data(api_name):
         weibo_config = load(weibo_config_file)
         oauth_client = Client(weibo_config['API_KEY'], weibo_config['API_SECRET'], weibo_config['REDIRECT_URI'],
                               weibo_config['TOKEN'])
-    return oauth_client.get(api_name, uid='1860068802')
+    return oauth_client.get(api_name, uid='1860068802', count=100)
 
 
 def n_gram(sentence, n):
