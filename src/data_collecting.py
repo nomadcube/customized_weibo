@@ -2,6 +2,7 @@
 from json import load
 from weibo import Client
 from hdfs import InsecureClient
+from io import open
 
 
 def craw_raw_data(api_name):
@@ -29,7 +30,32 @@ def n_gram(sentence, n):
     return [sentence[unit_index:unit_index + n] for unit_index in xrange(len(sentence) - n + 1)]
 
 
-def save_corpus(n=2):
+def save_corpus_local(n=2):
+    """
+    将抓取回来的微博存入hdfs作为语料库
+
+    :param n: int, 决定n元语法中n的值
+    :return: NULL
+    """
+    raw_favorites = craw_raw_data('favorites')
+    raw_latest_posts = craw_raw_data('statuses/friends_timeline')
+
+    with open("/Users/wumengling/PycharmProjects/customized_weibo/data/favorites.txt", "w", encoding="utf-8") as f:
+        for one_post in raw_favorites[u'favorites']:
+            if one_post['status'].get('retweeted_status') is not None:
+                f.write(" ".join(n_gram(one_post['status']['retweeted_status']['text'], n)) + "\n")
+            else:
+                f.write(" ".join(n_gram(one_post['status']['text'], n)) + "\n")
+
+    with open("/Users/wumengling/PycharmProjects/customized_weibo/data/latests.txt", "w", encoding="utf-8") as f:
+        for one_post in raw_latest_posts[u'statuses']:
+            if one_post.get('retweeted_status') is not None:
+                f.write(" ".join(n_gram(one_post['retweeted_status']['text'], n)) + "\n")
+            else:
+                f.write(" ".join(n_gram(one_post['text'], n)) + "\n")
+
+
+def save_corpus_hdfs(n=2):
     """
     将抓取回来的微博存入hdfs作为语料库
 
@@ -60,4 +86,4 @@ def save_corpus(n=2):
 
 if __name__ == '__main__':
     print n_gram(u'对文档进行n元语法处理', 2)
-    save_corpus(2)
+    save_corpus_local(2)
