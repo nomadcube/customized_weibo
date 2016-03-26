@@ -3,8 +3,38 @@ import re
 
 from json import load
 from weibo import Client
-from hdfs import InsecureClient
 from io import open
+
+
+def craw_save_clean_corpus(n=2):
+    """
+    将抓取回来的微博存入本地作为语料库
+
+    :param n: int, 决定n元语法中n的值
+    :return: NULL
+    """
+    raw_favorites = craw_raw_data('favorites')
+    raw_latest_posts = craw_raw_data('statuses/friends_timeline')
+
+    with open("/Users/wumengling/PycharmProjects/customized_weibo/data/favorites.txt", "w", encoding="utf-8") as f:
+        for one_post in raw_favorites[u'favorites']:
+            if one_post['status'].get('retweeted_status') is not None:
+                text_id = one_post['status']['retweeted_status']['id']
+                text = n_gram(clean_format(one_post['status']['retweeted_status']['text']), n)
+            else:
+                text_id = one_post['status']['id']
+                text = n_gram(clean_format(one_post['status']['text']), n)
+            f.write(str(text_id) + "||" + " ".join(text) + "\n")
+
+    with open("/Users/wumengling/PycharmProjects/customized_weibo/data/latests.txt", "w", encoding="utf-8") as f:
+        for one_post in raw_latest_posts[u'statuses']:
+            if one_post.get('retweeted_status') is not None:
+                text_id = one_post['retweeted_status']['id']
+                text = n_gram(clean_format(one_post['retweeted_status']['text']), 2)
+            else:
+                text_id = one_post['id']
+                text = n_gram(clean_format(one_post['text']), 2)
+            f.write(str(text_id) + "||" + " ".join(text) + "\n")
 
 
 def craw_raw_data(api_name):
@@ -44,64 +74,10 @@ def clean_format(sentence):
     sentence = re.sub(u" ", "", sentence)
     sentence = re.sub(u"：", "", sentence)
     sentence = re.sub(u"\"", "", sentence)
+    sentence = re.sub("\n", "", sentence)
     return sentence
-
-
-def save_corpus_local(n=2):
-    """
-    将抓取回来的微博存入本地作为语料库
-
-    :param n: int, 决定n元语法中n的值
-    :return: NULL
-    """
-    raw_favorites = craw_raw_data('favorites')
-    raw_latest_posts = craw_raw_data('statuses/friends_timeline')
-
-    with open("/Users/wumengling/PycharmProjects/customized_weibo/data/favorites.txt", "w", encoding="utf-8") as f:
-        for one_post in raw_favorites[u'favorites']:
-            if one_post['status'].get('retweeted_status') is not None:
-                f.write(" ".join(n_gram(clean_format(one_post['status']['retweeted_status']['text']), n)) + "\n")
-            else:
-                f.write(" ".join(n_gram(clean_format(one_post['status']['text']), n)) + "\n")
-
-    with open("/Users/wumengling/PycharmProjects/customized_weibo/data/latests.txt", "w", encoding="utf-8") as f:
-        for one_post in raw_latest_posts[u'statuses']:
-            if one_post.get('retweeted_status') is not None:
-                f.write(" ".join(n_gram(clean_format(one_post['retweeted_status']['text']), n)) + "\n")
-            else:
-                f.write(" ".join(n_gram(clean_format(one_post['text']), n)) + "\n")
-
-
-def save_corpus_hdfs(n=2):
-    """
-    将抓取回来的微博存入hdfs作为语料库
-
-    :param n: int, 决定n元语法中n的值
-    :return: NULL
-    """
-    client = InsecureClient('http://127.0.0.1:50070')
-    raw_favorites = craw_raw_data('favorites')
-    raw_latest_posts = craw_raw_data('statuses/friends_timeline')
-
-    client.delete('latest_posts.json')
-    client.delete('my_favorites.json')
-
-    with client.write('my_favorites.json', encoding='utf-8') as writer:
-        for one_post in raw_favorites[u'favorites']:
-            if one_post['status'].get('retweeted_status') is not None:
-                writer.write(" ".join(n_gram(one_post['status']['retweeted_status']['text'], n)) + "\n")
-            else:
-                writer.write(" ".join(n_gram(one_post['status']['text'], n)) + "\n")
-
-    with client.write('latest_posts.json', encoding='utf-8') as writer:
-        for one_post in raw_latest_posts[u'statuses']:
-            if one_post.get('retweeted_status') is not None:
-                writer.write(" ".join(n_gram(one_post['retweeted_status']['text'], n)) + "\n")
-            else:
-                writer.write(" ".join(n_gram(one_post['text'], n)) + "\n")
 
 
 if __name__ == '__main__':
     print n_gram(u'对文档进行n 元语,法处理', 2)
-    print clean_format(u'对文档进行n 元语,法处理')
-    save_corpus_local(2)
+    print clean_format(u'# 京 东 手 机 圈 #   H T C   1 0 跑 分 真 逆 天 了 ， 目 前 还 没 其 他 对 手 ？ \n外 媒 曝 光 了 一 张 H T C   1 0 安 兔 兔 跑 分 的 谍 照 ， 高 达 1 5 万 余 分 的 成 绩 再 次 刷 新 了 跑 分 纪 录 ， 强 的 也 是 没 谁 了 。 [ 给 力 ] 这 是 否 能 激 起 小 伙 伴 们 的 欲 望 呢 ？')

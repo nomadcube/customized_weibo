@@ -13,10 +13,11 @@ class MappingRel:
             with open(doc_file, "r", encoding="utf-8") as in_file:
                 for line in in_file:
                     mapped_doc = list()
-                    for word in line.strip().split(" "):
+                    text_id, text = line.strip().split("||")
+                    for word in text.split(" "):
                         self._data.setdefault(word, len(self._data))
                         mapped_doc.append(unicode(self._data[word]))
-                    out_file.write(" ".join(mapped_doc) + "\n")
+                    out_file.write(text_id + "||" + " ".join(mapped_doc) + "\n")
         return self
 
 

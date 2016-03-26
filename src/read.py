@@ -1,4 +1,7 @@
 # coding=utf-8
+from io import open
+
+
 def base_read(file_name):
     """
     将一个文档集读成list of list类型
@@ -7,11 +10,14 @@ def base_read(file_name):
     :param file_name: 文档集所在文件名
     :return: list, 包含所有的文档
     """
+    real_id = list()
     all_doc = list()
-    with open(file_name, "r") as f:
+    with open(file_name, "r", encoding="utf-8") as f:
         for line in f:
-            all_doc.append(line.strip().split(" "))
-    return all_doc
+            id, doc = line.strip().split("||")
+            all_doc.append(doc.split(" "))
+            real_id.append(id)
+    return real_id, all_doc
 
 
 if __name__ == '__main__':
