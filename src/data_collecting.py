@@ -49,7 +49,7 @@ def clean_format(sentence):
 
 def save_corpus_local(n=2):
     """
-    将抓取回来的微博存入hdfs作为语料库
+    将抓取回来的微博存入本地作为语料库
 
     :param n: int, 决定n元语法中n的值
     :return: NULL
