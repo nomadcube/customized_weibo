@@ -1,7 +1,7 @@
 # coding=utf-8
 import numpy as np
 
-from hmm_likelihood import forward_probability_initiate
+from src.hmm.hmm_likelihood import forward_probability_initiate
 
 
 def single_status_probability(forward_prob, backward_prob):

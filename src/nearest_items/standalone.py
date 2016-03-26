@@ -1,6 +1,6 @@
 # coding=utf-8
 import jieba
-from base import similarity
+from src.nearest_items.hadoop.base import jaccard_similarity
 
 
 sentence = u'腾讯里养了只喵'
@@ -8,4 +8,4 @@ with open('/Users/wumengling/PycharmProjects/customized_weibo/src/nearest_items/
     for line in f.readlines():
         line_vec = jieba.cut(line, cut_all=True)
         sentence_vec = jieba.cut(sentence, cut_all=True)
-        print similarity(line_vec, sentence_vec)
+        print jaccard_similarity(line_vec, sentence_vec)
