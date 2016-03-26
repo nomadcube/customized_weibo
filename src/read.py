@@ -1,5 +1,7 @@
 # coding=utf-8
 from io import open
+from scipy.sparse import coo_matrix, csr_matrix
+from array import array
 
 
 def base_read(file_name):
@@ -20,6 +22,34 @@ def base_read(file_name):
     return real_id, all_doc
 
 
+def read_sparse(file_name):
+    """
+    将一个文档集读成稀疏矩阵
+    所有项作为特征，项在特定一个文档中的频次作为特征取值
+
+    :param file_name: str, 文档集对应文件名
+    :return: coo_matrix
+    """
+    real_id = list()
+    row_index = array('I')
+    col_index = array('I')
+    element = array('f')
+    with open(file_name, "r", encoding="utf-8") as f:
+        for line_no, line in enumerate(f):
+            id, doc = line.strip().split("||")
+            real_id.append(id)
+            words = doc.split(" ")
+            for one_word in words:
+                row_index.append(int(line_no))
+                col_index.append(int(one_word))
+                element.append(words.count(one_word))
+    return real_id, coo_matrix((element, (row_index, col_index)), dtype="float")
+
 if __name__ == '__main__':
+    from feature_selection import inverse_doc_frequency, pick_features
     ad = base_read("/Users/wumengling/PycharmProjects/customized_weibo/data/mapped_latests.txt")
     print len(ad)
+    mat = read_sparse("/Users/wumengling/PycharmProjects/customized_weibo/data/mapped_latests.txt")[1]
+    mat = csr_matrix(mat)
+    print mat.shape
+    print len(pick_features(mat, 10))
