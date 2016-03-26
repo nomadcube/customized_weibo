@@ -5,7 +5,7 @@ from hdfs import InsecureClient
 
 client = InsecureClient("http://127.0.0.1:50070")
 
-cmd = ["hadoop", "jar", "/Users/wumengling/src/pig-0.15.0/test/e2e/pig/lib/hadoop-streaming.jar",
+cmd = ["map_reduce", "jar", "/Users/wumengling/src/pig-0.15.0/test/e2e/pig/lib/map_reduce-streaming.jar",
        "-file", "./mapper.py",
        "-mapper", "./mapper.py",
        "-file", "./reducer.py",
